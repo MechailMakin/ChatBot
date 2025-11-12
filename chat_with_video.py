@@ -26,13 +26,12 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 model, preprocess = clip.load("ViT-B/32", device=device)
 print("DONE LOADING CLIP MODEL")
 
-def connect_to_db():
-    # Connecting to postgre DB
-    host = '10.10.61.2'
-    port = '5432'
-    username = 'postgres'
-    password = '123456'
-    database_schema = 'chat_with_document'
+def connect_to_db ():
+    host = ''
+    port = ''
+    username = ''
+    password = ''
+    database_schema = ''
 
     connection_string = f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{database_schema}"
     # print("done")
@@ -42,6 +41,7 @@ def connect_to_db():
     cur = conn.cursor()
     print("Connected to Vector DB")
     return connection_string, cur, conn
+
 
 # Step 1: Load the LLM
 def load_llm():
@@ -191,7 +191,7 @@ def save_video_embeddings_to_pgvector(embedding_data: list, connection_string):
 
     vectorstore = PGVector(
         connection_string=connection_string,
-        collection_name="video_segments",
+        collection_name="",
         distance_strategy=DistanceStrategy.COSINE,
         embedding_function=None
     )
@@ -406,4 +406,5 @@ if __name__ == "__main__":
 
 # Take the query as a Voice
 # def record_voice_to_wav(output_path="./Documentation/Video_to_text/output.wav", timeout=10, phrase_time_limit=15):
+
 #     recognizer = sr.Recognizer()
