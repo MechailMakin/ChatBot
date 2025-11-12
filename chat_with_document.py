@@ -242,12 +242,21 @@ def chunk_documents_semantic(cleaned_texts: List[Dict], embeddings, threshold: i
     print(f"Semantic chunking complete. Generated {len(final_docs)} chunks.")
     return final_docs
 
+def save_embeddings(final_docs, embeddings, connection_string):
+    # Create a PGVector instance to house the documents and embeddings
+    db_vectorization = PGVector.from_documents(
+        documents = final_docs, # The documents we loaded from the Pand...
+        embedding = embeddings, # Our instance of the embeddings class, ...
+        collection_name = "", # The name of the table we want c...
+        distance_strategy = DistanceStrategy.COSINE, # The distance stra...
+        connection_string = connection_string) # The connection str...
+    print("SAVED IN DATABASE")
 
 def hybrid_retriever(embeddings, connection_string):
     store = PGVector(
         connection_string=connection_string,
         embedding_function=embeddings,
-        collection_name="documents",
+        collection_name="",
         distance_strategy=DistanceStrategy.COSINE
     )
 
@@ -423,4 +432,5 @@ if __name__ == "__main__":
                 
                 else:
                     print(f"\n Invalid choice. Please enter 1, 2, or 0.")
+
 
