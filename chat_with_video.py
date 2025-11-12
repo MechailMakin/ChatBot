@@ -218,7 +218,7 @@ def retrieve_segments(connection_string, top_k: int = 10):
     store = PGVector(
         connection_string=connection_string,
         embedding_function=embedder,
-        collection_name="video_segments",
+        collection_name="",
         distance_strategy=DistanceStrategy.COSINE
     )
     print("✅ Connected to PGVector")
@@ -408,3 +408,4 @@ if __name__ == "__main__":
 # def record_voice_to_wav(output_path="./Documentation/Video_to_text/output.wav", timeout=10, phrase_time_limit=15):
 
 #     recognizer = sr.Recognizer()
+
