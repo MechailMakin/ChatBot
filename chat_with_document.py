@@ -30,6 +30,18 @@ def connect_to_db ():
     host = ''
     port = ''
     username = ''
+    password = ''
+    database_schema = ''
+
+    connection_string = f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{database_schema}"
+    # print("done")
+
+    # Connect to PostgreSQL database
+    conn = psycopg2.connect(database=database_schema, user=username, host=host, port=port, password=password)
+    cur = conn.cursor()
+    print("Connected to Vector DB")
+    return connection_string, cur, conn
+
 
 def load_embedding_model():
     # Instantiate the Embedding Model
@@ -411,3 +423,4 @@ if __name__ == "__main__":
                 
                 else:
                     print(f"\n Invalid choice. Please enter 1, 2, or 0.")
+
