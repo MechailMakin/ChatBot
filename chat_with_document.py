@@ -331,4 +331,83 @@ def rag_pipeline(ollama, retriever, query):
     response = construct_result_with_sources()
     print(for_display(response)) # Uses the Arabic display function
 
+
     return response
+
+if __name__ == "__main__":
+    while True:
+        print("\n RAG Chatbot Options")
+        print("1. Chat with existing documents")
+        print("2. Add and chat with a new document")
+        print("0. Exit")
+
+        choice = input("Enter your choice (1/2/0): ").strip()
+
+        if choice == "1":
+            # Chat with existing documents
+            connection_string, cur, conn = connect_db()
+            embeddings = embedding_model()
+            retriever = hybrid_retriever(embeddings, connection_string)
+            ollama = load_llm()
+
+
+            while True:
+                query = input("\n Enter your query: ").strip()
+                if not query:
+                    print(" Empty query. Try again.")
+                    continue
+
+                    rag_pipline(ollama, retriever, query)
+
+                    again = input("\n Do you want to ask another question? (y/n): ").strip().lower()
+                    if again != "y":
+                        break
+
+        elif choice == "2":
+            # Add and embed new document
+            file_path = input("\n Enter path to your document (PDF, Word, Excel, CSV): ").strip()
+
+            if not os.path.exists(file_path):
+                print(f"\n File not found. Please check the path.")
+                continue
+
+            try:
+                docs = load_file_path(file_path)
+                print(f"\n Loaded {len(docs)} pages from: {os.path.basename(file_path)}")
+
+                # Step 1: Clean & normalize
+                cleaned_texts = prepare_documents_for_rag(docs, source_name=os.path.basename(file_path))
+
+                # Step 2: chunk
+                final_docs = chunk_documents(cleaned_texts)
+
+                # Step 3: Embed & store
+                connection_string, cur, conn = connect_db()
+                embeddings = embedding_model()
+                save_embeddings(final_docs, embeddings, connection_string)
+
+                retriever = hybrid_retriever(embeddings, connection_string)
+                ollama = load_llm()
+            
+                while True:
+                    query = input("\n Enter your query: ").strip()
+                    if not query:
+                        print(f"\n Empty query. Try again.")
+                        continue
+                
+                    try:
+                        rag_pipline(ollama, retriever, query)
+                
+                        again = input("\n Do you want to ask another question? (y/n): ").strip().lower()
+                        if again != "y":
+                            break
+                
+                    except Exception as e:
+                        print(f" Error: {e}")
+                
+                elif choice == "0":
+                    print(f"\n Exiting. Goodbye!")
+                    break
+                
+                else:
+                    print(f"\n Invalid choice. Please enter 1, 2, or 0.")
